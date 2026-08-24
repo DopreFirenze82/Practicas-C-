@@ -10,7 +10,7 @@ namespace Practicas_01
     {
         static void Main(string[] args)
         {
-            string[] productos = { "Arroz", "Pan", "Carne", "Agua", "Manteca"};
+            string[] productos = { "Arroz", "Pan", "Carne", "Agua", "Manteca" };
             Dictionary<string, int> precios = new Dictionary<string, int>
             {
                 { productos[0], 5},
@@ -20,12 +20,14 @@ namespace Practicas_01
                 { productos[4], 15}
             };
             List<string> registro = new List<string>();
+            Dictionary<string, int> conteoRegistro = new Dictionary<string, int>();
 
             Random rng = new Random();
-
+            int totalRecaudado = 0; 
             int clientes = rng.Next(1, 6);
 
             Console.WriteLine("===== TIENDA ABIERTA =====\n\n");
+
 
             for (int i = 0; i < clientes; i++)
             {
@@ -36,14 +38,45 @@ namespace Practicas_01
             }
 
             Console.WriteLine("===== TIENDA CERRADA =====\n\n");
-            Console.WriteLine($"{clientes} cllientes han comprado los siguientes artículos:\n");
-            for (int i = 0; i < registro.Count; i++)
+            Console.WriteLine($"{clientes} clientes han comprado los siguientes artículos:\n");
+
+            foreach (string item in registro)
             {
-                Console.WriteLine(registro[i]);
+                if (conteoRegistro.ContainsKey(item))
+                {
+                    conteoRegistro[item]++;
+                }
+                else
+                {
+                    conteoRegistro.Add(item, 1);
+                }
             }
 
+            foreach (var item in conteoRegistro)
+            {
+                int precioUnitario = precios[item.Key];
 
+                int precioFinal = precioUnitario;
 
+                int probDescuento = rng.Next(1, 101);
+
+                if (probDescuento > 50)
+                {
+                    precioFinal = precioUnitario / 2;
+                    Console.WriteLine($"¡OFERTA! {item.Key} a mitad de precio.");
+                }
+
+                int subtotal = precioFinal * item.Value;
+
+                totalRecaudado += subtotal;
+
+                Console.WriteLine($"{item.Key} : {item.Value} u. x {precioUnitario} = ${subtotal}");
+            }
+
+            Console.WriteLine("\n");
+            Console.WriteLine($"TOTAL DEL DÍA: {totalRecaudado}");
+
+            
         }
     }
 }
