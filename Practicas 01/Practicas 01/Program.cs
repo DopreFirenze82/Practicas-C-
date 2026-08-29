@@ -10,73 +10,40 @@ namespace Practicas_01
     {
         static void Main(string[] args)
         {
-            string[] productos = { "Arroz", "Pan", "Carne", "Agua", "Manteca" };
-            Dictionary<string, int> precios = new Dictionary<string, int>
+            Dictionary<string, int> catalogo = new Dictionary<string, int>
             {
-                { productos[0], 5},
-                { productos[1], 4},
-                { productos[2], 25},
-                { productos[3], 10},
-                { productos[4], 15}
+                { "Pesas", 50},
+                { "Soga", 100},
+                { "Saco", 150},
             };
-            List<string> registro = new List<string>();
-            Dictionary<string, int> conteoRegistro = new Dictionary<string, int>();
 
-            Random rng = new Random();
-            int totalRecaudado = 0; 
-            int clientes = rng.Next(1, 6);
+            Console.Write("Cuántas monedas tenes?: ");
+            string inputMonedas = Console.ReadLine();
 
-            Console.WriteLine("===== TIENDA ABIERTA =====\n\n");
-
-
-            for (int i = 0; i < clientes; i++)
+            if (int.TryParse(inputMonedas, out int monedas))
             {
-                int pedido = rng.Next(0, productos.Length);
-                Console.Write($"Entra un cliente y pide lo siguiente: {productos[pedido]}.\n");
-                registro.Add(productos[pedido]);
-                Console.WriteLine("El cliente se retira.\n");
-            }
-
-            Console.WriteLine("===== TIENDA CERRADA =====\n\n");
-            Console.WriteLine($"{clientes} clientes han comprado los siguientes artículos:\n");
-
-            foreach (string item in registro)
-            {
-                if (conteoRegistro.ContainsKey(item))
+                Console.WriteLine($"\nCon {monedas} podes comprar los siguientes artículos:");
+                foreach (var item in catalogo)
                 {
-                    conteoRegistro[item]++;
+                    Console.WriteLine($"Producto: {item.Key}.");
+                }
+
+                Console.Write("¿Qué querés comprar?: ");
+                string compra = Console.ReadLine();
+
+                if (catalogo.ContainsKey(compra))
+                {
+                    Console.WriteLine($"El producto {compra} cuesta ${catalogo[compra]}");
                 }
                 else
                 {
-                    conteoRegistro.Add(item, 1);
+                    Console.WriteLine("No tenemos eso.");
                 }
             }
-
-            foreach (var item in conteoRegistro)
+            else
             {
-                int precioUnitario = precios[item.Key];
-
-                int precioFinal = precioUnitario;
-
-                int probDescuento = rng.Next(1, 101);
-
-                if (probDescuento > 50)
-                {
-                    precioFinal = precioUnitario / 2;
-                    Console.WriteLine($"¡OFERTA! {item.Key} a mitad de precio.");
-                }
-
-                int subtotal = precioFinal * item.Value;
-
-                totalRecaudado += subtotal;
-
-                Console.WriteLine($"{item.Key} : {item.Value} u. x {precioUnitario} = ${subtotal}");
+                Console.WriteLine("\nQué descís flaco? Raja de acá.");
             }
-
-            Console.WriteLine("\n");
-            Console.WriteLine($"TOTAL DEL DÍA: {totalRecaudado}");
-
-            
         }
-    }
+    }    
 }
