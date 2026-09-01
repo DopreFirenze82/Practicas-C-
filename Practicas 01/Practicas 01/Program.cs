@@ -10,56 +10,25 @@ namespace Practicas_01
     {
         static void Main(string[] args)
         {
-            Dictionary<string, int> cantReps = new Dictionary<string, int>
-            {
-                { "Flexiones", 20},
-                { "Dominadas", 8},
-                { "Sentadillas", 25},
-                { "Abdominales", 50}
-            };
-            Dictionary<string, int> registro = new Dictionary<string ,int>();
+            Console.WriteLine("Creación de trabajador:\n");
 
-            Bienvenida(cantReps);
+            Console.Write("Ingrese un nombre: ");
+            string nombreInicial = Console.ReadLine();
+            Console.Write("Energía: ");
+            int energiaInicial = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Dinero: ");
+            int dineroInicial = Convert.ToInt32(Console.ReadLine());
 
-            PedirEjercicioySeries(cantReps, registro);
-            ImprimirResumen(registro, cantReps);
+            Luchador trabajador1 = new Luchador(nombreInicial, energiaInicial, dineroInicial);
+
+            Console.WriteLine("\n=== EMPIEZA LA JORNADA ===");
+            Console.Write($"Cuántas horas va a trabajar {nombreInicial}?: ");
+            int horas = Convert.ToInt32(Console.ReadLine());
+
+            trabajador1.Trabajar(horas);
+            trabajador1.Comer();
+
+            trabajador1.MostrarEstadisticas();
         }
-        static void Bienvenida(Dictionary<string, int> cantReps)
-        {
-            Console.WriteLine("===== RUTINA DE CALISTENIA =====");
-            Console.WriteLine("\nPreparate para entrenar!\n");
-       
-            Console.WriteLine("Ejercicios:");
-            foreach (var item in cantReps)
-            {
-                Console.WriteLine($" - {item.Key}");
-            }
-        }
-        static void PedirEjercicioySeries(Dictionary<string, int> cantReps, Dictionary<string, int> registro)
-        {
-            Console.WriteLine("\nArmando la rutina:");
-
-            foreach (var item in cantReps)
-            {
-                Console.Write($"Cuántas series de {item.Key} vas a hacer hoy? (0 si ninguna): ");
-                int series = Convert.ToInt32(Console.ReadLine());
-                if (series > 0)
-                {
-                    registro.Add(item.Key, series);
-                }
-            }
-        }
-        static void ImprimirResumen(Dictionary<string, int> registro, Dictionary<string, int> cantReps)
-        {
-            Console.WriteLine("\n===== FINAL DEL ENTRENAMIENTO =====");
-
-            foreach(var item in registro)
-            {
-                Console.WriteLine($"\n - Ejercicio: {item.Key} - Series: {item.Value}");
-                Console.WriteLine($"   REPETICIONES: {cantReps[item.Key] * item.Value}");
-            }
-        }
-
-   
     }    
 }
