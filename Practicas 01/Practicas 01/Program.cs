@@ -10,25 +10,70 @@ namespace Practicas_01
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Creación de trabajador:\n");
+            Dictionary<string, int> catalogo = new Dictionary<string, int>
+            {
+                { "USP-S", 200},
+                { "MP9", 1250},
+                { "M4A1-S", 2900},
+                { "AK47", 2700}
+            };
+            Console.WriteLine("Menú de armas:\n");
+            foreach (var item in catalogo)
+            {
+                Console.WriteLine($". {item.Key} - ${item.Value}");
+            }
 
-            Console.Write("Ingrese un nombre: ");
-            string nombreInicial = Console.ReadLine();
-            Console.Write("Energía: ");
-            int energiaInicial = Convert.ToInt32(Console.ReadLine());
-            Console.Write("Dinero: ");
-            int dineroInicial = Convert.ToInt32(Console.ReadLine());
+            int dineroJugador = PreguntaPlata();
 
-            Luchador trabajador1 = new Luchador(nombreInicial, energiaInicial, dineroInicial);
+            bool sigue = true;
+            do
+            {
+                string elec = Eleccion();
 
-            Console.WriteLine("\n=== EMPIEZA LA JORNADA ===");
-            Console.Write($"Cuántas horas va a trabajar {nombreInicial}?: ");
-            int horas = Convert.ToInt32(Console.ReadLine());
-
-            trabajador1.Trabajar(horas);
-            trabajador1.Comer();
-
-            trabajador1.MostrarEstadisticas();
+                if (PuedeComprar(dineroJugador, catalogo[elec]))
+                {
+                    Console.WriteLine($"¡Compraste el arma por ${catalogo[elec]}!");
+                    dineroJugador -= catalogo[elec];
+                }
+                else
+                {
+                    Console.WriteLine($"Con {dineroJugador} no te alcanza.");
+                }
+                Estado(dineroJugador);
+                sigue = SeguirComprando();
+            } while (sigue);
         }
+
+        static int PreguntaPlata()
+        {
+            Console.Write("\nCuánta plata tiene?: ");
+            int dinero = Convert.ToInt32(Console.ReadLine());
+            return dinero;
+        }
+
+        static string Eleccion()
+        {
+            Console.Write("\nQué arma quisiera comprar?: ");
+            string elec = Console.ReadLine();
+            return elec;
+        }
+
+        static bool PuedeComprar(int dineroJugador, int costoArma)
+        {
+            if (dineroJugador >= costoArma){return true;}else{return false; }
+        }
+
+        static void Estado(int dinero)
+        {
+            Console.WriteLine($"Te quedan ${dinero} disponibles.");
+        }
+
+        static bool SeguirComprando()
+        {
+            Console.Write("Querés seguir comprando?: ");
+            string respuesta = Console.ReadLine();
+            if (respuesta == "Si") { return true; } else { return false;}
+        }
+
     }    
 }
