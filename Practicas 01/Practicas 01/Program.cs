@@ -159,6 +159,7 @@ namespace Practicas_01
             Console.WriteLine($"\nTotal gastado: ${total}");
             Console.WriteLine($"Dinero restante: ${dineroJugador}.");
         }
+        
 
     }    
 }
