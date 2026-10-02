@@ -8,115 +8,144 @@ namespace Practicas_01
 {
     internal class Program
     {
-        static Dictionary<int, string> categorias = new Dictionary<int, string>{{ 1, "Equipamiento"},{ 2, "Espadas" },{ 3, "Magia"}, { 4, "Atuendo"}};
-        static Dictionary<string, int> equipamiento = new Dictionary<string, int>{{ "Poción de vida", 100},{ "Polvo de hada", 300},{ "Frasco de XP", 500},};
-        static Dictionary<string, int> espadas = new Dictionary<string, int>{{ "Daga", 100},{ "Sable curvo", 300},{ "Excalibur", 1000},};
-        static Dictionary<string, int> magia = new Dictionary<string, int>{{ "Varita", 400},{ "Báculo", 700}};
-        static Dictionary<string, int> atuendo = new Dictionary<string, int>{{ "Mago", 600}, { "Guerrero", 300},{ "Asesino", 500}, };
-    
+        static Dictionary<string, int> Comidas = new Dictionary<string, int> { { "Carne", 20 }, { "Pollo", 15 } };
+        static Dictionary<string, int> Bebidas = new Dictionary<string, int> { { "Agua", 5 }, { "Leche", 10 } };
+        static Dictionary<string, int> Suministros = new Dictionary<string, int> { { "Cuerda", 10 }, { "Antorcha", 5 } };
+        static Dictionary<int, string> Categorias = new Dictionary<int, string> { { 1, "Comida" }, { 2, "Bebida" }, { 3, "Suministros" } };
         static void Main(string[] args)
         {
+            List<string> registroItems = new List<string>();
+            List<int> registroValor = new List<int>();
 
-            List<string> registroItem = new List<string>();
-            List<int> registroGasto = new List<int>();
+            int monedas = PedirOro();
 
-            int dineroJugador = PreguntaPlata();
+            MostrarCategorias(Categorias);
 
-            Diccionario(categorias);
-            int precio;
-            bool sigue = true;
-            do
+            bool seguir = true;
+            while (seguir)
             {
-                int elec = Eleccion();
+                int elec = EleccionMenu(Categorias);
+                string item = DevuelveItemPrecio(elec, out int precio);
+                Console.WriteLine($"\n--> Agregaste {item} al carrito por ${precio}");
 
-                string item = DevuelveItemPrecio(elec, out precio);
+                registroItems.Add(item);
+                registroValor.Add(precio);
 
-                if (PuedeComprar(dineroJugador, precio))
+                Console.WriteLine("\nDesea seguir comprando? [Si o No]: ");
+
+                seguir = SeguirComprando();
+
+            }
+
+            Console.WriteLine("\nAsí quedó su carrito: ");
+            int total = Carrito(registroItems, registroValor);
+            bool puedePagar = Paga(monedas, total, registroItems, out int resto);
+
+            while (puedePagar == false)
+            {
+                Console.Write("\nElija un item a descartar: ");
+                string inputDescarte = Console.ReadLine();
+                if (int.TryParse(inputDescarte, out int descarte) && descarte <= registroItems.Count && descarte > 0)
                 {
-                    Console.WriteLine($"¡Compraste '{item}' por ${precio}!");
-                    dineroJugador -= precio;
-                    registroItem.Add(item);
-                    registroGasto.Add(precio);
+                    int indice = descarte - 1;
+                    Console.WriteLine($"{registroItems[indice]} de ${registroValor[indice]} fue descartado del carrito.");
+                    registroItems.RemoveAt(indice);
+                    registroValor.RemoveAt(indice);
                 }
                 else
                 {
-                    Console.WriteLine($"Con {dineroJugador} no te alcanza.");
+                    Console.WriteLine("Valor inválido! Descartá un item de la lista.");
                 }
-                Estado(dineroJugador);
-                sigue = SeguirComprando();
-            } while (sigue);
-
-            Console.WriteLine("\n\nCierre de la compra.");
-            EstadoFinal(dineroJugador, registroItem, registroGasto);
+                total = Carrito(registroItems, registroValor);
+                puedePagar = Paga(monedas, total, registroItems, out resto);
+            }
 
             
-        }
 
-        static void Diccionario(Dictionary<int, string> categorias)
+
+        }
+        static int PedirOro()
         {
-            Console.WriteLine("\nMenú de compras:\n");
-            foreach (var item in categorias)
+            Console.Write("Cuántas monedas tenés?: ");
+            while (true)
+            {
+                string inputMonedas = Console.ReadLine();
+
+                if (int.TryParse(inputMonedas, out int monedas))
+                {
+                    return monedas;
+                }
+                else
+                {
+                    Console.Write("Valor inválido! Volvé a ingresar la cantidad: ");
+                }
+            }
+        }
+        static void MostrarCategorias(Dictionary<int, string> Categorias)
+        {
+            Console.WriteLine("\nMenú de hoy:\n");
+            foreach (var item in Categorias)
             {
                 Console.WriteLine($"{item.Key} - {item.Value}");
             }
         }
-        static int PreguntaPlata()
+        static int EleccionMenu(Dictionary<int, string> Categorias)
         {
-            Console.Write("Cuánta plata tiene?: ");
-            int dinero = Convert.ToInt32(Console.ReadLine());
-            return dinero;
-        }
-
-        static int Eleccion()
-        {
-            Console.Write("\nElija qué categoría le intesa comprar: ");
-            
+            Console.Write("\nQué menú le interesa?: ");
             while (true)
             {
                 string inputElec = Console.ReadLine();
-
-                if (int.TryParse(inputElec, out int elec))
+                if (int.TryParse(inputElec, out int elec) && Categorias.ContainsKey(elec))
                 {
-                    return elec;   
+                    return elec;
                 }
                 else
                 {
-                    Console.Write("Error. Ingrese un número válido: ");
+                    Console.Write("Valor inválido! Vuelva a ingresar un N° que corresponda a un menú: ");
                 }
             }
         }
 
-        static string DevuelveItemPrecio(int eleccion, out int precio)
+        static string DevuelveItemPrecio(int elec, out int precio)
         {
             List<KeyValuePair<string, int>> listaOpciones;
-            switch (eleccion)
+            string menu = ""; 
+
+            switch (elec)
             {
                 case 1:
-                    listaOpciones = equipamiento.ToList();
+                    listaOpciones = Comidas.ToList();
+                    menu = "Comidas";
                     break;
                 case 2:
-                    listaOpciones = espadas.ToList();
+                    listaOpciones = Bebidas.ToList();
+                    menu = "Bebidas";
                     break;
                 case 3:
-                    listaOpciones = magia.ToList();
+                    listaOpciones = Suministros.ToList(); 
+                    menu = "Suministros";
                     break;
-                case 4:
-                    listaOpciones = atuendo.ToList();
-                    break;    
                 default:
-                    Console.WriteLine("Número inválido.");
+                    Console.WriteLine("Valor inválido!");
                     precio = 0;
+
                     return "Nada";
             }
+
+            Console.WriteLine($"\nMenú {menu}:\n");
+
             for (int i = 0; i < listaOpciones.Count(); i++)
             {
                 Console.Write($"{i + 1} - {listaOpciones[i].Key} - ${listaOpciones[i].Value}\n");
             }
-            Console.Write("\nQué querés comprar? (NUMÉRO): ");
+
+            Console.Write("\nQué ítem desea comprar? [Número]: ");
+
             while (true)
             {
+                int cantidad = listaOpciones.Count;
                 string inputNum = Console.ReadLine();
-                if (int.TryParse(inputNum, out int num))
+                if (int.TryParse(inputNum, out int num) && num < cantidad + 1 && num > 0)
                 {
                     var itemElegido = listaOpciones[num - 1];
                     precio = itemElegido.Value;
@@ -124,42 +153,64 @@ namespace Practicas_01
                 }
                 else
                 {
-                    Console.Write("Error. Ingresá un número válido: ");
+                    Console.WriteLine("Valor inválido! Vuelve a ingresar un número: ");
                 }
             }
-        }
 
-        static bool PuedeComprar(int dineroJugador, int costoArma)
-        {
-            if (dineroJugador >= costoArma){return true;}else{return false; }
         }
-
-        static void Estado(int dinero)
-        {
-            Console.WriteLine($"Te quedan ${dinero} disponibles.");
-        }
-
         static bool SeguirComprando()
         {
-            Console.Write("Querés seguir comprando?: ");
-            string respuesta = Console.ReadLine();
-            if (respuesta == "Si") { return true; } else { return false;}
-        }
-        static void EstadoFinal(int dineroJugador,List<string> compra, List<int> gasto)
-        {
-            Console.WriteLine("\nItems comprados: ");
-            int total = 0;
-            int i = 0;
-            foreach (var item in compra)
+            string SioNo = Console.ReadLine().ToUpper();
+            
+            if (SioNo == "SI")
             {
-                Console.WriteLine($".{item} - ${gasto[i]}");
-                total += gasto[i];
-                i++;
+                return true;
             }
-            Console.WriteLine($"\nTotal gastado: ${total}");
-            Console.WriteLine($"Dinero restante: ${dineroJugador}.");
+            else if (SioNo == "NO")
+            {
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("No se entiende flaco, vas a seguir comprando.");
+                return true;
+            }
         }
-        
+        static int Carrito(List<string> Item, List<int> Valor)
+        {
+            int total = 0;
+            for (int i = 0; i < Item.Count; i++)
+            {
+                Console.WriteLine($"{i+1}. {Item[i]} - ${Valor[i]}");
+                total += Valor[i];
+            }
 
-    }    
+            Console.WriteLine($"\nEl total a pagar es de ${total}.");
+
+            return total;
+        }
+        static bool Paga(int dineroJugador, int total, List<string> Item ,out int resto)
+        {
+            
+            if (dineroJugador >= total)
+            {
+                if (Item.Count != 0)
+                {
+                    Console.WriteLine($"La compra fue efectuada. Al jugador le restan ${dineroJugador - total}.");
+                }
+                else
+                {
+                    Console.WriteLine("El carrito esta vacío. Vuelva otro día!");
+                }
+                resto = dineroJugador - total;
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"No tiene el dinero suficiente. Te faltan ${total - dineroJugador}");
+                resto = total - dineroJugador;
+                return false;
+            }
+        }
+    }
 }
