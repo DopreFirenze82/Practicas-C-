@@ -8,47 +8,48 @@ namespace Practicas_01
 {
     internal class Program
     {
-        struct Atributos
+        struct Credenciales
         {
-            public int fuerza;
-            public int agilidad;
-            public int inteligencia;
+            public string usuario;
+            public int ping;
+            public string rol;
 
-            public Atributos (int fuerza, int agilidad, int inteligencia)
+            public Credenciales (string usuario, int ping, string rol)
             {
-                this.fuerza = fuerza;
-                this.agilidad= agilidad;
-                this.inteligencia = inteligencia;
+                this.usuario = usuario;
+                this.ping = ping;
+                this.rol = rol;
             }
         }
         static void Main(string[] args)
         {
-            Console.WriteLine("CREACIÓN DE PERSONAJE\n ");
+            Console.WriteLine("IDENTIFICARSE\n\n");
 
-            Atributos atributos = pedirDatos();
+            Credenciales datos = LogIn();
 
-            Console.WriteLine("\n--- PERSONAJE CREADO CON ÉXITO ---");
+            Console.WriteLine($"Usuario: {datos.usuario}. Ping: {datos.ping}. Rol: {datos.rol}.");
 
-            Console.WriteLine("\nSu personaje tiene los siguientes atributos: ");
-            Console.WriteLine($"-Fuerza: {atributos.fuerza}\n" +
-                $"-Agilidad: {atributos.agilidad}\n" +
-                $"-Inteligencia: {atributos.inteligencia}");
-           
+            datos = IntentoHackeo(datos);
+
+            Console.WriteLine($"Rol después del ataque: {datos.rol}.");
         }
 
-        static Atributos pedirDatos()
+        static Credenciales LogIn()
         {
-            Console.WriteLine("Ingrese las estadísticas de su personaje:");
-            Console.Write("- Fuerza: ");
-            int fuerza = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Ingrese su usuario: ");
+            string usuario = Console.ReadLine();
+            Console.Write("Ingrese su ping: ");
+            int ping = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Ingrese su rol: ");
+            string rol = Console.ReadLine();
 
-            Console.Write("- Agilidad: ");
-            int agilidad = Convert.ToInt32(Console.ReadLine());
+            return new Credenciales(usuario, ping, rol);
+        }
 
-            Console.Write("- Inteligencia: ");
-            int inteligencia = Convert.ToInt32(Console.ReadLine());
-
-            return new Atributos(fuerza, agilidad, inteligencia);
+        static Credenciales IntentoHackeo(Credenciales datosClonados)
+        {
+            datosClonados.rol = "Usuario baneado";
+            return datosClonados;
         }
     }
 }
