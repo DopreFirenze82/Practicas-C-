@@ -6,31 +6,35 @@ using System.Threading.Tasks;
 
 namespace Practicas_01
 {
-    class Enemigo
+    class Item
     {
-        public string nombre;
-        public int salud;
-        public Enemigo(string nombre, int salud)
-        {
-            this.nombre = nombre;
-            this.salud = salud;
-        }
+        public string Nombre { get; set;}
+        public int Precio { get; private set; }
 
-        public void RecibirDaño(int daño)
+        public Item (string nombre, int precio)
         {
-            salud -= daño;
-            Console.WriteLine($"{nombre} recibió {daño}. Vida restante: {salud}.");
+            this.Nombre = nombre;
+            this.Precio = precio;
         }
     }
     internal class Program
     {
         static void Main(string[] args)
         {
-            Enemigo goblin = new Enemigo("Goblin", 100);
-            Console.WriteLine($"Apareció un enemigo: {goblin.nombre}, con {goblin.salud} puntos de vida.");
+            List<Item> carrito = new List<Item>();
+            carrito.Add(new Item("Runa de fuego", 100));
+            carrito.Add(new Item("Runa de agua", 150));
+            carrito.Add(new Item("Runa de rayo", 200));
 
-            goblin.RecibirDaño(30);
-            goblin.RecibirDaño(20);
+            int total = 0;
+            int i = 1;
+            foreach (var item in carrito)
+            {
+                Console.WriteLine($"{i}- {item.Nombre}: ${item.Precio}.");
+                i++;
+                total += item.Precio;                
+            }
+            Console.WriteLine($"\nEl total gastado es de: ${total}.");
         }
     }
 }
